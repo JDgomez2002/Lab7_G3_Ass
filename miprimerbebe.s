@@ -2,7 +2,6 @@
 @Grupo 3
 @Melanie Maldonado
 @Gonzalo Santizo
-@Javier Vasquez
 @Jose Daniel Gomez
 
 	.text
