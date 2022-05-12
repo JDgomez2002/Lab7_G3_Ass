@@ -2,12 +2,10 @@
 Agregar_producto:
     push{lr}
 
-    add r4, r7
-
     MOV R7, #4		 @4=llamado a "write" swi
     MOV R0, #1		 @1=stdout (monitor)
     MOV R2, #100	 	@longitud de la cadena
-    LDR R1,= bienvenida @r7? @apunta a la cadena
+    LDR R1,= r8 @r7? @apunta a la cadena
     SWI 0
     
     ldr r0, = menu_compra
