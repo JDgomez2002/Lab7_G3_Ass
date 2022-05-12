@@ -32,14 +32,11 @@ formato_asciz_char_producto:
 desicion_valor:
    .word 0
 
-desicion_valor_compra:
-   .word 0
-
 despedida:
    .asciz "\n-----------------------------\n\nMuchas gracias por comprar con nosotros!\n\nEsperamos verlo pronto!!!\n\n"
 
 error:
-   .asciz "\n\tIngreso incorrecto, siga instrucciones por favor...\n"
+   .asciz "\n\n\tIngreso incorrecto, siga instrucciones por favor..."
 
 ingrese_nombre: 
    .asciz "\nPor favor ingresa el nombre de la factura: "
@@ -49,15 +46,17 @@ nombre:
 
 nombre_valor:
    .asciz "                   "
-/*
-productos: @arreglo de tipo de productos
-   .word 0, 0, 0, 0, 0, 0, 0, 0
 
 cantidad_producto:
-   .word 0
-*/
+   .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   @word 0
+
+desicion_valor_compra:
+   .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   @word 0
+
 solcitar_cantidad_productos:
-   .asciz "\nIngrese la cantidad de producto deseado: "
+   .asciz "\n\nIngrese la cantidad de producto deseado: "
 
 formato_decimal:
    .asciz "%d"
@@ -66,10 +65,10 @@ cantidad_productos_valor:
    .word 0, 0, 0, 0, 0, 0, 0, 0
 
 precio_unitario_productos:
-   .word 0, 0, 0, 0, 0, 0, 0, 0
+   .word 18, 25, 10, 35, 4, 26, 8, 19
 
 cantidad_disponible_productos:
-   .word 0, 0, 0, 0, 0, 0, 0, 0
+   .word 20, 32, 15, 15, 20, 18, 35, 35
 
 producto_agregado:
    .asciz "\nProducto agregado al carrito exitosamente!!!\n"
@@ -129,16 +128,11 @@ Menu:
   	SWI 0
 
 
-opcion_menu: @<------------------
+opcion_menu: @<-----------------------------------------------------------------------------------------------
    ldr r4, = desicion_valor
    ldr r4,[r4]
    cmp r4, #'1'
-      beq print_op_menu_1
-      myMov_Agregar_productos:
-         mov r0, = 
-      
-      beq Agregar_producto
-
+      beq seccion_agregar_producto
    cmpne r4, #'2'
    beq Facturar
    cmpne r4, #'3'
@@ -146,54 +140,15 @@ opcion_menu: @<------------------
    bne Error
 
 /*
-	ldrb r1,[r5],#1
-   strb r1,[r5]
+    ldrb r1,[r5],#1
+    strb r1,[r5]
 */
-/*
-Agregar_producto:
-   ldr r0, = menu_compra
-   bl puts
-   ldr r0, = ingrese_desicion
-   bl puts
-   ldr r0, = formato_decimal
-   ldr r1, = desicion_valor_compra
-   bl scanf
 
-     [2,5,0,0,0,6,0]
-     [35,20,15,7,8,23,67]
-     [1,7,3,8,8,9,10]
-
-   @Clasificar productos
-   ldr r5, = desicion_valor_compra @1, 3, 5 -> 0, 2, 4
-   ldr r4,[r5]
-   sub r8, r4, #1
-   ldr r6, = productos
-   ldr r4, [r6, r8] @ n posicion
-
-   
-
-   @cantidad de productos
-   ldr r0, = solcitar_cantidad_productos
-   bl puts
-   ldr r0, = formato_decimal
-   ldr r1, = cantidad_producto
-   bl scanf
-   ldr r0, = cantidad_producto
-   ldrb r0, [r0]
-   add r4, r4, r0
-   cmp r4, rn
-   strble r4, [r6, r8]
-   ldr r1, = cantidad_productos_valor
-   strb r0, [r1]
-
-   ldr r0, = producto_agregado
-   bl puts
-   b Menu
-   */
 
 Facturar:
    @@Bloque de leer nombre 
 	@@se lee el nombre que ingresa el usuario
+    /*
 	ldr r0,=ingrese_nombre @@formato de ingresar nombre
 	bl puts 
 	ldr r0,=nombre @@ variable que almacena el nombre
@@ -207,7 +162,52 @@ Facturar:
    bl puts
    ldr r0, = factura_productos
    bl puts
+   b Salir
+   */
 
+   @print
+   MOV R7, #4		 @4=llamado a "write" swi
+   MOV R0, #1		 @1=stdout (monitor)
+   MOV R2, #45	 	@longitud de la cadena
+   LDR R1,= ingrese_nombre @apunta a la cadena
+   SWI 0
+
+   @input -> nombre del cliente !!!
+    mov r7,#3		@3=llamado a "read" swi
+    mov R0, #0		@0=stdout (teclado)
+    mov R2, #20		@longitud de la cadena: 20 caracteres
+    LDR R1, = nombre_valor	@apunta a la variable donde se guarda
+    SWI 0
+
+    @print
+   MOV R7, #4		 @4=llamado a "write" swi
+   MOV R0, #1		 @1=stdout (monitor)
+   MOV R2, #33	 	@longitud de la cadena
+   LDR R1,= factura1 @apunta a la cadena
+   SWI 0
+
+    @print
+   MOV R7, #4		 @4=llamado a "write" swi
+   MOV R0, #1		 @1=stdout (monitor)
+   MOV R2, #20	 	@longitud de la cadena
+   LDR R1,= nombre_factura @apunta a la cadena
+   SWI 0
+
+    @print
+   MOV R7, #4		 @4=llamado a "write" swi
+   MOV R0, #1		 @1=stdout (monitor)
+   MOV R2, #19	 	@longitud de la cadena
+   LDR R1,= nombre_valor @apunta a la cadena
+   SWI 0
+
+    @print
+   MOV R7, #4		 @4=llamado a "write" swi
+   MOV R0, #1		 @1=stdout (monitor)
+   MOV R2, #10	 	@longitud de la cadena
+   LDR R1,= factura_productos @apunta a la cadena
+   SWI 0
+
+    b Salir
 
 Salir:
    ldr r0, = despedida
@@ -220,33 +220,41 @@ Salir:
 Error:
    ldr r0, = error
    bl puts
-   bl getchar
    b Menu
 
-print_op_menu_1:
-   MOV R7, #4		 @4=llamado a "write" swi
-   MOV R0, #1		 @1=stdout (monitor)
-   MOV R2, #603	 	@longitud de la cadena
-   LDR R1,= menu_compra @apunta a la cadena 
-   SWI 0
+seccion_agregar_producto:
+    @ PRINT
+    MOV R7, #4		 @4=llamado a "write" swi
+    MOV R0, #1		 @1=stdout (monitor)
+    MOV R2, #600	 	@longitud de la cadena
+    LDR R1,= menu_compra @apunta a la cadena 
+    SWI 0
 
-   MOV R7, #4		 @4=llamado a "write" swi
-   MOV R0, #1		 @1=stdout (monitor)
-   MOV R2, #23	 	@longitud de la cadena
-   LDR R1,= ingrese_desicion @apunta a la cadena 
-   SWI 0
+    @ PRINT
+    MOV R7, #4		 @4=llamado a "write" swi
+    MOV R0, #1		 @1=stdout (monitor)
+    MOV R2, #23	 	@longitud de la cadena
+    LDR R1,= ingrese_desicion @apunta a la cadena
+    SWI 0
 
-   @input
-   mov r7,#3		@3=llamado a "read" swi
-  	mov R0, #0		@0=stdout (teclado)
-  	mov R2, #1		@longitud de la cadena: 20 caracteres
-  	LDR R1, = desicion_valor_compra	@apunta a la variable donde se guarda
-  	SWI 0
+    @input -> INPUT PRODUCTO ID
+    mov r7,#3		@3=llamado a "read" swi
+    mov R0, #0		@0=stdout (teclado)
+    mov R2, #20		@longitud de la cadena: 20 caracteres
+    LDR R1, = desicion_valor_compra	@apunta a la variable donde se guarda
+    SWI 0
 
-   MOV R7, #4		 @4=llamado a "write" swi
-   MOV R0, #1		 @1=stdout (monitor)
-   MOV R2, #43	 	@longitud de la cadena
-   LDR R1,= solcitar_cantidad_productos @apunta a la cadena
-   SWI 0
+    @ PRINT
+    MOV R7, #4		 @4=llamado a "write" swi
+    MOV R0, #1		 @1=stdout (monitor)
+    MOV R2, #43	 	@longitud de la cadena
+    LDR R1,= solcitar_cantidad_productos @apunta a la cadena
+    SWI 0
 
-   b myMov_Agregar_productos
+    @input -> INPUT CANTIDAD PRODUCTO
+    mov r7,#3		@3=llamado a "read" swi
+    mov R0, #0		@0=stdout (teclado)
+    mov R2, #20		@longitud de la cadena: 20 caracteres
+    LDR R1, = cantidad_producto	@apunta a la variable donde se guarda
+    SWI 0
+    b Menu
